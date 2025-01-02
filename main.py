@@ -3,6 +3,7 @@ import typing
 import pathlib
 import argparse
 
+import numpy
 import matplotlib.pyplot
 
 
@@ -52,7 +53,7 @@ def calculate_states(
     :returns: an array of evaluated logistic function results from the initial
         states and logistic function parameter
     """
-    states = [[math.nan] * max_iteration for initial_state in initial_states]
+    states = numpy.full((len(initial_states), max_iteration,), numpy.nan)
 
     for row, initial_state in enumerate(initial_states):
         states[row][0] = initial_state
@@ -62,10 +63,10 @@ def calculate_states(
             if (
                 # fmt: off
                 states[row][iteration] < 0.0
-                or math.isclose(
+                or numpy.isclose(
                     states[row][iteration],
                     states[row][previous_iteration],
-                    rel_tol=relative_tolerance,
+                    rtol=relative_tolerance,
                 )
                 # fmt: on
             ):
