@@ -69,8 +69,9 @@ def main():
             stop_iteration = iteration
             break
 
-    matplotlib.pyplot.plot(state[:stop_iteration + 1])
+    matplotlib.pyplot.plot(state[:stop_iteration + 1], label=f"$x_{0}$: {initial_state}")
     matplotlib.pyplot.title(r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = " + f"{parameter}")
+    matplotlib.pyplot.legend(loc="lower right")
     matplotlib.pyplot.show()
 
 
