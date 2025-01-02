@@ -30,7 +30,25 @@ def calculate_states(
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
     max_iteration: float = DEFAULT_MAX_ITERATION,
 ) -> list[list[float]]:
-    """Calculate a range of states"""
+    """Calculate a range of logistic function results from initial states
+
+    Returns an array of logistic function evaluations from initial states and
+    the logistic function parameter. Exits the calculation early if the function
+    state stabilizes, leaving NaN where calculation was discontinued.
+
+    Implemented "stable" exit conditions:
+
+    * Calculation returns a negative number
+    * Calculation returns the same number as input within the relative tolerance
+
+    :param initial_states: list of initial states :math:`x_{0}`
+    :param parameter: logistic function parameter :math:`r`
+    :param relative_tolerance: the relative tolerance on float equality comparisons
+    :param max_iteration: the maximum number of iterations to compute
+
+    :returns: an array of evaluated logistic function results from the initial
+        states and logistic function parameter
+    """
     state = [[math.nan] * max_iteration for initial_state in initial_states]
 
     for row, initial_state in enumerate(initial_states):
@@ -75,7 +93,7 @@ def get_parser():
         "--max-iteration",
         type=int,
         default=DEFAULT_MAX_ITERATION,
-        help="The maximum number of iterations to compute",
+        help="The relative tolerance on float equality comparisons",
     )
     parser.add_argument(
         "-t",
