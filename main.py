@@ -59,19 +59,20 @@ def main():
     parameter = args.parameter
     initial_states = args.initial
 
-    for initial_state in initial_states:
-        state = [0] * max_iteration
-        state[0] = initial_state
+    state = [[0] * max_iteration for initial_state in initial_states]
+
+    for row, initial_state in enumerate(initial_states):
+        state[row][0] = initial_state
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
-            state[iteration] = logistic(state[previous_iteration], parameter)
-            if state[iteration] < 0.0 or math.isclose(
-                state[iteration], state[previous_iteration]
+            state[row][iteration] = logistic(state[row][previous_iteration], parameter)
+            if state[row][iteration] < 0.0 or math.isclose(
+                state[row][iteration], state[row][previous_iteration]
             ):
                 stop_iteration = iteration
                 break
 
-        matplotlib.pyplot.plot(state[:stop_iteration + 1], label=f"$x_{0}$: {initial_state}")
+        matplotlib.pyplot.plot(state[row][:stop_iteration + 1], label=f"$x_{0}$: {state[row][0]}")
 
     matplotlib.pyplot.title(r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = " + f"{parameter}")
     matplotlib.pyplot.legend(loc="lower right")
