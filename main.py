@@ -12,6 +12,7 @@ DESCRIPTION = """Calculate and plot the logistic function:
 """
 DEFAULT_MAX_ITERATION = 100
 DEFAULT_RELATIVE_TOLERANCE = 1e-4
+DEFAULT_MAX_PERIOD = 12
 
 
 def logistic(x: float, r: float) -> float:
@@ -83,19 +84,19 @@ def is_period_stable(
 
 def stable_period(
     curve: numpy.ndarray,
-    maximum_period: int = 12,
+    max_period: int = DEFAULT_MAX_PERIOD,
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
 ) -> int:
     """Return the stable period or None
 
     :param curve: numpy vector of values to evaluate for period stability
-    :param maximum_period: maximum number of repeated values to search for
+    :param max_period: maximum number of repeated values to search for
     :param relative_tolerance: the relative tolerance on float equality
         comparisons
 
     :returns: the stable period for the curve
     """
-    for period in range(1, maximum_period + 1):
+    for period in range(1, max_period + 1):
         if is_period_stable(curve, period=period, relative_tolerance=relative_tolerance):
             return period
     return None
@@ -104,8 +105,9 @@ def stable_period(
 def calculate_states(
     initial_states: list[float],
     parameter: float,
-    relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
+    max_period: int = DEFAULT_MAX_PERIOD,
     max_iteration: float = DEFAULT_MAX_ITERATION,
+    relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
 ) -> list[list[float]]:
     """Calculate a range of logistic function results from initial states
 
@@ -139,7 +141,7 @@ def calculate_states(
                 states[row][iteration] < 0.0
                 or stable_period(
                     states[row][:iteration],
-                    maximum_period=12,
+                    max_period=max_period,
                     relative_tolerance=relative_tolerance,
                 ) is not None
                 # fmt: on
@@ -200,18 +202,25 @@ def get_parser() -> argparse.ArgumentParser:
         help="The output plot absolute or relative path",
     )
     parser.add_argument(
+        "-n",
+        "--max-period",
+        type=int,
+        default=DEFAULT_MAX_PERIOD,
+        help="The maximum number of periods to search for",
+    )
+    parser.add_argument(
         "-m",
         "--max-iteration",
         type=int,
         default=DEFAULT_MAX_ITERATION,
-        help="The relative tolerance on float equality comparisons",
+        help="The maximum number of iterations to calculate",
     )
     parser.add_argument(
         "-t",
         "--relative-tolerance",
         type=float,
         default=DEFAULT_RELATIVE_TOLERANCE,
-        help="The relative tolerance used to compare floats",
+        help="The relative tolerance on float equality comparisons",
     )
     return parser
 
@@ -223,14 +232,16 @@ def main() -> None:
     initial_states = args.initial
     parameter = args.parameter
     output = args.output
-    relative_tolerance = args.relative_tolerance
+    max_period = args.period
     max_iteration = args.max_iteration
+    relative_tolerance = args.relative_tolerance
 
     states = calculate_states(
         initial_states,
         parameter,
-        relative_tolerance=relative_tolerance,
+        max_period=max_period,
         max_iteration=max_iteration,
+        relative_tolerance=relative_tolerance,
     )
 
     plot_states(states, parameter, output=output)
