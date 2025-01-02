@@ -11,3 +11,12 @@ Environment
 .. code-block::
 
    $ conda env create --name chaos-env --file environment.yml
+   $ conda activate chaos-env
+
+====
+Test
+====
+
+.. code-block::
+
+   $ pytest
