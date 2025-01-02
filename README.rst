@@ -43,6 +43,12 @@ Example that "converges" to period 2 in more than 100 iterations
 
    $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3 -m 1000
 
+Example that "converges" to period 4
+
+.. code-block::
+
+   $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3.4
+
 =====
 Style
 =====
