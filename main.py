@@ -43,35 +43,54 @@ def calculate_states(
 
     :param initial_states: list of initial states :math:`x_{0}`
     :param parameter: logistic function parameter :math:`r`
-    :param relative_tolerance: the relative tolerance on float equality comparisons
+    :param relative_tolerance: the relative tolerance on float equality
+        comparisons
     :param max_iteration: the maximum number of iterations to compute
 
     :returns: an array of evaluated logistic function results from the initial
         states and logistic function parameter
     """
-    state = [[math.nan] * max_iteration for initial_state in initial_states]
+    states = [[math.nan] * max_iteration for initial_state in initial_states]
 
     for row, initial_state in enumerate(initial_states):
-        state[row][0] = initial_state
+        states[row][0] = initial_state
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
-            state[row][iteration] = logistic(state[row][previous_iteration], parameter)
+            states[row][iteration] = logistic(states[row][previous_iteration], parameter)
             if (
                 # fmt: off
-                state[row][iteration] < 0.0
+                states[row][iteration] < 0.0
                 or math.isclose(
-                    state[row][iteration],
-                    state[row][previous_iteration],
+                    states[row][iteration],
+                    states[row][previous_iteration],
                     rel_tol=relative_tolerance,
                 )
                 # fmt: on
             ):
                 break
 
-    return state
+    return states
 
 
-def get_parser():
+def plot_states(states: list[list[float]], parameter: float) -> None:
+    """Plot the logistic function results from :meth:`calculate_states`
+
+    :param states: Array of logistic function calculations with dimensions
+        [curve, iteration]
+    :param parameter: logistic function parameter :math:`r`
+    """
+    for curve in states:
+        matplotlib.pyplot.plot(curve, label=f"$x_{0}$: {curve[0]}")
+
+    matplotlib.pyplot.title(
+        r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = "
+        + f"{parameter}"
+    )
+    matplotlib.pyplot.legend(loc="lower right")
+    matplotlib.pyplot.show()
+
+
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -105,32 +124,23 @@ def get_parser():
     return parser
 
 
-def main():
+def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 
     max_iteration = args.max_iteration
-    stop_iteration = max_iteration
     parameter = args.parameter
     initial_states = args.initial
     relative_tolerance = args.relative_tolerance
 
-    state = calculate_states(
+    states = calculate_states(
         initial_states,
         parameter,
         relative_tolerance=relative_tolerance,
         max_iteration=max_iteration,
     )
 
-    for row in state:
-        matplotlib.pyplot.plot(row[: stop_iteration + 1], label=f"$x_{0}$: {row[0]}")
-
-    matplotlib.pyplot.title(
-        r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = "
-        + f"{parameter}"
-    )
-    matplotlib.pyplot.legend(loc="lower right")
-    matplotlib.pyplot.show()
+    plot_states(states, parameter)
 
 
 if __name__ == "__main__":
