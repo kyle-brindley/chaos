@@ -8,6 +8,7 @@ DESCRIPTION = """Calculate and plot the logistic function:
 `x_{next} = r * x_{current} * (1 - x_{current})`"
 """
 DEFAULT_MAX_ITERATION = 10000
+DEFAULT_RELATIVE_TOLERANCE = 1e-4
 
 
 def logistic(x: float, r: float):
@@ -47,6 +48,13 @@ def get_parser():
         default=DEFAULT_MAX_ITERATION,
         help="The maximum number of iterations to compute",
     )
+    parser.add_argument(
+        "-t",
+        "--relative-tolerance",
+        type=float,
+        default=DEFAULT_RELATIVE_TOLERANCE,
+        help="The relative tolerance used to compare floats",
+    )
     return parser
 
 
@@ -58,6 +66,7 @@ def main():
     stop_iteration = max_iteration
     parameter = args.parameter
     initial_states = args.initial
+    relative_tolerance = args.relative_tolerance
 
     state = [[0] * max_iteration for initial_state in initial_states]
 
@@ -67,14 +76,21 @@ def main():
             previous_iteration = iteration - 1
             state[row][iteration] = logistic(state[row][previous_iteration], parameter)
             if state[row][iteration] < 0.0 or math.isclose(
-                state[row][iteration], state[row][previous_iteration]
+                state[row][iteration],
+                state[row][previous_iteration],
+                rel_tol=relative_tolerance,
             ):
                 stop_iteration = iteration
                 break
 
-        matplotlib.pyplot.plot(state[row][:stop_iteration + 1], label=f"$x_{0}$: {state[row][0]}")
+        matplotlib.pyplot.plot(
+            state[row][: stop_iteration + 1], label=f"$x_{0}$: {state[row][0]}"
+        )
 
-    matplotlib.pyplot.title(r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = " + f"{parameter}")
+    matplotlib.pyplot.title(
+        r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = "
+        + f"{parameter}"
+    )
     matplotlib.pyplot.legend(loc="lower right")
     matplotlib.pyplot.show()
 
