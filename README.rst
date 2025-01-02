@@ -29,3 +29,11 @@ Run
 .. code-block::
 
    $ python main.py --initial 0.5 --parameter 1.0
+
+=====
+Style
+=====
+
+.. code-block::
+
+   $ black .
