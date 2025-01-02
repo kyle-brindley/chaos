@@ -1,4 +1,6 @@
 import math
+import typing
+import pathlib
 import argparse
 
 import matplotlib.pyplot
@@ -72,12 +74,17 @@ def calculate_states(
     return states
 
 
-def plot_states(states: list[list[float]], parameter: float) -> None:
+def plot_states(
+    states: list[list[float]],
+    parameter: float,
+    output: typing.Optional[pathlib.Path] = None,
+) -> None:
     """Plot the logistic function results from :meth:`calculate_states`
 
     :param states: Array of logistic function calculations with dimensions
         [curve, iteration]
     :param parameter: logistic function parameter :math:`r`
+    :param filepath: save to file instead of raising a plot window
     """
     for curve in states:
         matplotlib.pyplot.plot(curve, label=f"$x_{0}$: {curve[0]}")
@@ -87,7 +94,10 @@ def plot_states(states: list[list[float]], parameter: float) -> None:
         + f"{parameter}"
     )
     matplotlib.pyplot.legend(loc="lower right")
-    matplotlib.pyplot.show()
+    if output is not None:
+        matplotlib.pyplot.savefig(output)
+    else:
+        matplotlib.pyplot.show()
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -106,6 +116,13 @@ def get_parser() -> argparse.ArgumentParser:
         type=float,
         required=True,
         help="The logistic function parameter: `r`)",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=pathlib.Path,
+        default=None,
+        help="The output plot absolute or relative path",
     )
     parser.add_argument(
         "-m",
@@ -128,10 +145,11 @@ def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 
-    max_iteration = args.max_iteration
-    parameter = args.parameter
     initial_states = args.initial
+    parameter = args.parameter
+    output = args.output
     relative_tolerance = args.relative_tolerance
+    max_iteration = args.max_iteration
 
     states = calculate_states(
         initial_states,
@@ -140,7 +158,7 @@ def main() -> None:
         max_iteration=max_iteration,
     )
 
-    plot_states(states, parameter)
+    plot_states(states, parameter, output=output)
 
 
 if __name__ == "__main__":
