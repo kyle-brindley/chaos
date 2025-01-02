@@ -188,6 +188,7 @@ def plot_states(
 
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
+        description=DESCRIPTION,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
