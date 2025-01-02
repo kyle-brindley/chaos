@@ -95,6 +95,11 @@ def calculate_states(
                     period=1,
                     relative_tolerance=relative_tolerance,
                 )
+                or is_period_stable(
+                    states[row][:iteration],
+                    period=2,
+                    relative_tolerance=relative_tolerance,
+                )
                 # fmt: on
             ):
                 break

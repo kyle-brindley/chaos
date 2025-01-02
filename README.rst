@@ -31,11 +31,17 @@ Example that converges pretty quickly
 
    $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 2.4
 
-Example that does not converge in 100 iterations (or 1e6)
+Example that "converges" to period 2 (bouncing between two states)
 
 .. code-block::
 
-   $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3 -m 1000000
+   $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3.1
+
+Example that "converges" to period 2 in more than 100 iterations
+
+.. code-block::
+
+   $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3 -m 1000
 
 =====
 Style
