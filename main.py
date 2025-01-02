@@ -1,3 +1,4 @@
+import math
 import argparse
 
 import matplotlib.pyplot
@@ -51,15 +52,20 @@ def main():
     args = parser.parse_args()
 
     max_iteration = args.max_iteration
+    stop_iteration = max_iteration
     parameter = args.parameter
     initial_state = args.initial
 
     state = [0] * max_iteration
     state[0] = initial_state
     for iteration in range(1, max_iteration):
-        state[iteration] = logistic(state[iteration - 1], parameter)
+        previous_iteration = iteration - 1
+        state[iteration] = logistic(state[previous_iteration], parameter)
+        if math.isclose(state[iteration], state[previous_iteration]):
+            stop_iteration = iteration
+            break
 
-    matplotlib.pyplot.plot(state)
+    matplotlib.pyplot.plot(state[:stop_iteration])
     matplotlib.pyplot.show()
 
 
