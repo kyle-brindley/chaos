@@ -1,4 +1,12 @@
+import argparse
+
 import matplotlib.pyplot
+
+
+DESCRIPTION = """Calculate and plot the logistic function:
+`x_{next} = r * x_{current} * (1 - x_{current})`"
+"""
+DEFAULT_MAX_ITERATION = 10000
 
 
 def logistic(x: float, r: float):
@@ -14,10 +22,37 @@ def logistic(x: float, r: float):
     return r * x * (1 - x)
 
 
+def get_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--initial",
+        type=float,
+        required=True,
+        help="The initial state: `x_{0}`",
+    )
+    parser.add_argument(
+        "--parameter",
+        type=float,
+        required=True,
+        help="The logistic function parameter: `r`)",
+    )
+    parser.add_argument(
+        "-m",
+        "--max-iteration",
+        type=int,
+        default=DEFAULT_MAX_ITERATION,
+        help="The maximum number of iterations to compute (default: %(default))",
+    )
+    return parser
+
+
 def main():
-    max_iteration = 100
-    parameter = 1.0
-    initial_state = 0.5
+    parser = get_parser()
+    args = parser.parse_args()
+
+    max_iteration = args.max_iteration
+    parameter = args.parameter
+    initial_state = args.initial
 
     state = [0] * max_iteration
     state[0] = initial_state
