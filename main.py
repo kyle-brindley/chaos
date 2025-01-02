@@ -11,7 +11,7 @@ DEFAULT_MAX_ITERATION = 100
 DEFAULT_RELATIVE_TOLERANCE = 1e-4
 
 
-def logistic(x: float, r: float):
+def logistic(x: float, r: float) -> float:
     r"""Return the next value in the logistic function give the current value
 
     .. math
@@ -22,6 +22,32 @@ def logistic(x: float, r: float):
     :param r: The parameter :math:`r` value of the logistic function
     """
     return r * x * (1 - x)
+
+
+def calculate_states(
+    initial_states: list[float],
+    parameter: float,
+    relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
+    max_iteration: float = DEFAULT_MAX_ITERATION,
+):
+    """Calculate a range of states"""
+    stop_iterations = [max_iteration for initial_state in initial_states]
+    state = [[0] * max_iteration for initial_state in initial_states]
+
+    for row, initial_state in enumerate(initial_states):
+        state[row][0] = initial_state
+        for iteration in range(1, max_iteration):
+            previous_iteration = iteration - 1
+            state[row][iteration] = logistic(state[row][previous_iteration], parameter)
+            if state[row][iteration] < 0.0 or math.isclose(
+                state[row][iteration],
+                state[row][previous_iteration],
+                rel_tol=relative_tolerance,
+            ):
+                stop_iterations[row] = iteration
+                break
+
+    return state, stop_iterations
 
 
 def get_parser():
@@ -68,21 +94,14 @@ def main():
     initial_states = args.initial
     relative_tolerance = args.relative_tolerance
 
-    state = [[0] * max_iteration for initial_state in initial_states]
+    state, stop_iterations = calculate_states(
+        initial_states,
+        parameter,
+        relative_tolerance=relative_tolerance,
+        max_iteration=max_iteration,
+    )
 
-    for row, initial_state in enumerate(initial_states):
-        state[row][0] = initial_state
-        for iteration in range(1, max_iteration):
-            previous_iteration = iteration - 1
-            state[row][iteration] = logistic(state[row][previous_iteration], parameter)
-            if state[row][iteration] < 0.0 or math.isclose(
-                state[row][iteration],
-                state[row][previous_iteration],
-                rel_tol=relative_tolerance,
-            ):
-                stop_iteration = iteration
-                break
-
+    for row, stop_iteration in enumerate(stop_iterations):
         matplotlib.pyplot.plot(
             state[row][: stop_iteration + 1], label=f"$x_{0}$: {state[row][0]}"
         )
