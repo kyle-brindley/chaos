@@ -101,7 +101,8 @@ def stable_period(
             curve, period=period, relative_tolerance=relative_tolerance
         ):
             return period
-    return None
+    else:
+        return None
 
 
 def calculate_states(
@@ -110,7 +111,7 @@ def calculate_states(
     max_period: int = DEFAULT_MAX_PERIOD,
     max_iteration: float = DEFAULT_MAX_ITERATION,
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
-) -> list[list[float]]:
+) -> tuple[numpy.ndarray, list]:
     """Calculate a range of logistic function results from initial states
 
     Returns an array of logistic function evaluations from initial states and
@@ -129,12 +130,14 @@ def calculate_states(
     :param max_iteration: the maximum number of iterations to compute
 
     :returns: an array of evaluated logistic function results from the initial
-        states and logistic function parameter
+        states and logistic function parameter and a list of the associated
+        periods
     """
     states = numpy.full(
         (len(initial_states), max_iteration),
         numpy.nan,
     )
+    periods = numpy.full((len(initial_states),), None)
 
     for row, initial_state in enumerate(initial_states):
         states[row][0] = initial_state
@@ -143,24 +146,23 @@ def calculate_states(
             states[row][iteration] = logistic(
                 states[row][previous_iteration], parameter
             )
-            if (
-                # fmt: off
-                states[row][iteration] < 0.0
-                or stable_period(
-                    states[row][:iteration],
-                    max_period=max_period,
-                    relative_tolerance=relative_tolerance,
-                ) is not None
-                # fmt: on
-            ):
+            periods[row] = stable_period(
+                states[row][:iteration],
+                max_period=max_period,
+                relative_tolerance=relative_tolerance,
+            )
+            if states[row][iteration] < 0.0 or periods[row] is not None:
                 break
 
-    return states
+    period = periods[0] if numpy.all(periods == periods[0]) else None
+
+    return states, period
 
 
 def plot_states(
-    states: list[list[float]],
+    states: numpy.ndarray,
     parameter: float,
+    period: typing.Optional[int] = None,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
     """Plot the logistic function results from :meth:`calculate_states`
@@ -175,7 +177,7 @@ def plot_states(
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = "
-        + f"{parameter}"
+        + f"{parameter}, period = {period}"
     )
     matplotlib.pyplot.legend(loc="lower right")
     if output is not None:
@@ -239,11 +241,11 @@ def main() -> None:
     initial_states = args.initial
     parameter = args.parameter
     output = args.output
-    max_period = args.period
+    max_period = args.max_period
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
 
-    states = calculate_states(
+    states, period = calculate_states(
         initial_states,
         parameter,
         max_period=max_period,
@@ -254,6 +256,7 @@ def main() -> None:
     plot_states(
         states,
         parameter,
+        period=period,
         output=output,
     )
 
