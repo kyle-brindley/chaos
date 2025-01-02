@@ -30,7 +30,7 @@ def logistic(x: float, r: float) -> float:
 
 def return_periods(
     curve: numpy.ndarray,
-    period: int = 1
+    period: int = 1,
 ) -> tuple[numpy.ndarray, numpy.ndarray]:
     """Return last two periods from curve
 
@@ -49,7 +49,7 @@ def return_periods(
     second_period_start = first_period_start - period
     second_period_end = first_period_start
     first_period = curve[first_period_start:]
-    second_period = curve[second_period_start: second_period_end]
+    second_period = curve[second_period_start:second_period_end]
     return first_period, second_period
 
 
@@ -97,7 +97,9 @@ def stable_period(
     :returns: the stable period for the curve
     """
     for period in range(1, max_period + 1):
-        if is_period_stable(curve, period=period, relative_tolerance=relative_tolerance):
+        if is_period_stable(
+            curve, period=period, relative_tolerance=relative_tolerance
+        ):
             return period
     return None
 
@@ -129,13 +131,18 @@ def calculate_states(
     :returns: an array of evaluated logistic function results from the initial
         states and logistic function parameter
     """
-    states = numpy.full((len(initial_states), max_iteration,), numpy.nan)
+    states = numpy.full(
+        (len(initial_states), max_iteration),
+        numpy.nan,
+    )
 
     for row, initial_state in enumerate(initial_states):
         states[row][0] = initial_state
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
-            states[row][iteration] = logistic(states[row][previous_iteration], parameter)
+            states[row][iteration] = logistic(
+                states[row][previous_iteration], parameter
+            )
             if (
                 # fmt: off
                 states[row][iteration] < 0.0
