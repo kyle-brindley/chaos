@@ -251,7 +251,11 @@ def main() -> None:
         relative_tolerance=relative_tolerance,
     )
 
-    plot_states(states, parameter, output=output)
+    plot_states(
+        states,
+        parameter,
+        output=output,
+    )
 
 
 if __name__ == "__main__":
