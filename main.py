@@ -31,8 +31,7 @@ def calculate_states(
     max_iteration: float = DEFAULT_MAX_ITERATION,
 ):
     """Calculate a range of states"""
-    stop_iterations = [max_iteration for initial_state in initial_states]
-    state = [[0] * max_iteration for initial_state in initial_states]
+    state = [[math.nan] * max_iteration for initial_state in initial_states]
 
     for row, initial_state in enumerate(initial_states):
         state[row][0] = initial_state
@@ -44,10 +43,9 @@ def calculate_states(
                 state[row][previous_iteration],
                 rel_tol=relative_tolerance,
             ):
-                stop_iterations[row] = iteration
                 break
 
-    return state, stop_iterations
+    return state
 
 
 def get_parser():
@@ -94,16 +92,16 @@ def main():
     initial_states = args.initial
     relative_tolerance = args.relative_tolerance
 
-    state, stop_iterations = calculate_states(
+    state = calculate_states(
         initial_states,
         parameter,
         relative_tolerance=relative_tolerance,
         max_iteration=max_iteration,
     )
 
-    for row, stop_iteration in enumerate(stop_iterations):
+    for row in state:
         matplotlib.pyplot.plot(
-            state[row][: stop_iteration + 1], label=f"$x_{0}$: {state[row][0]}"
+            row[: stop_iteration + 1], label=f"$x_{0}$: {row[0]}"
         )
 
     matplotlib.pyplot.title(
