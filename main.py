@@ -27,7 +27,21 @@ def logistic(x: float, r: float) -> float:
     return r * x * (1 - x)
 
 
-def return_periods(curve: numpy.ndarray, period: int = 1):
+def return_periods(
+    curve: numpy.ndarray,
+    period: int = 1
+) -> tuple[numpy.ndarray, numpy.ndarray]:
+    """Return last two periods from curve
+
+    Period indicates number of values in a series, e.g. period 1 returns the
+    last two values [2] and [3] of [1, 2, 3] and period 5 means two series of
+    length 5 [2-6], and [7-11] from [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].
+
+    :param curve: numpy vector of values to evaluate for period stability
+    :param period: number of repeated values
+
+    :returns: two numpy vectors of lengths equal to the period
+    """
     if len(curve) < 2 * period:
         raise ValueError(f"Curve does not have enough points for period {period}")
     first_period_start = -period
@@ -43,6 +57,19 @@ def is_period_stable(
     period: int = 1,
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
 ) -> bool:
+    """Return boolean for period stability
+
+    Period indicates number of repeating values that are equal, e.g. period 1
+    means two values in a row are equal [1, 1] and period 5 means two series of
+    length 5 are equal [1, 2, 3, 4, 5, 1, 2, 3, 4, 5].
+
+    :param curve: numpy vector of values to evaluate for period stability
+    :param period: number of repeated values
+    :param relative_tolerance: the relative tolerance on float equality
+        comparisons
+
+    :returns: boolean indicating that the curve ends in a period
+    """
     try:
         first_period, second_period = return_periods(curve, period=period)
     except ValueError as err:
