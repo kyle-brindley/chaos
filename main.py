@@ -57,9 +57,9 @@ def main():
     max_iteration = args.max_iteration
     stop_iteration = max_iteration
     parameter = args.parameter
-    initial_state = args.initial
+    initial_states = args.initial
 
-    for initial_state in args.initial:
+    for initial_state in initial_states:
         state = [0] * max_iteration
         state[0] = initial_state
         for iteration in range(1, max_iteration):
