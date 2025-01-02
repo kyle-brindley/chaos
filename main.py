@@ -38,10 +38,15 @@ def calculate_states(
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
             state[row][iteration] = logistic(state[row][previous_iteration], parameter)
-            if state[row][iteration] < 0.0 or math.isclose(
-                state[row][iteration],
-                state[row][previous_iteration],
-                rel_tol=relative_tolerance,
+            if (
+                # fmt: off
+                state[row][iteration] < 0.0
+                or math.isclose(
+                    state[row][iteration],
+                    state[row][previous_iteration],
+                    rel_tol=relative_tolerance,
+                )
+                # fmt: on
             ):
                 break
 
@@ -100,9 +105,7 @@ def main():
     )
 
     for row in state:
-        matplotlib.pyplot.plot(
-            row[: stop_iteration + 1], label=f"$x_{0}$: {row[0]}"
-        )
+        matplotlib.pyplot.plot(row[: stop_iteration + 1], label=f"$x_{0}$: {row[0]}")
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = "
