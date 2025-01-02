@@ -29,7 +29,7 @@ def calculate_states(
     parameter: float,
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
     max_iteration: float = DEFAULT_MAX_ITERATION,
-):
+) -> list[list[float]]:
     """Calculate a range of states"""
     state = [[math.nan] * max_iteration for initial_state in initial_states]
 
