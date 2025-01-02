@@ -2,6 +2,7 @@ channels:
   - conda-forge
 
 dependencies:
+  - matplotlib-base
   - pytest
   - pytest-cov
   - pytest-xdist
