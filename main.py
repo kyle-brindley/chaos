@@ -23,7 +23,7 @@ def logistic(x: float, r: float):
 
 
 def get_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--initial",
         type=float,
@@ -41,7 +41,7 @@ def get_parser():
         "--max-iteration",
         type=int,
         default=DEFAULT_MAX_ITERATION,
-        help="The maximum number of iterations to compute (default: %(default))",
+        help="The maximum number of iterations to compute",
     )
     return parser
 
