@@ -63,11 +63,14 @@ def main():
     for iteration in range(1, max_iteration):
         previous_iteration = iteration - 1
         state[iteration] = logistic(state[previous_iteration], parameter)
-        if math.isclose(state[iteration], state[previous_iteration]):
+        if state[iteration] < 0.0 or math.isclose(
+            state[iteration], state[previous_iteration]
+        ):
             stop_iteration = iteration
             break
 
-    matplotlib.pyplot.plot(state[:stop_iteration])
+    matplotlib.pyplot.plot(state[:stop_iteration + 1])
+    matplotlib.pyplot.title(r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = " + f"{parameter}")
     matplotlib.pyplot.show()
 
 
