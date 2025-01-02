@@ -27,6 +27,33 @@ def logistic(x: float, r: float) -> float:
     return r * x * (1 - x)
 
 
+def return_periods(curve: numpy.ndarray, period: int = 1):
+    if len(curve) < 2 * period:
+        raise ValueError(f"Curve does not have enough points for period {period}")
+    first_period_start = -period
+    second_period_start = first_period_start - period
+    second_period_end = first_period_start
+    first_period = curve[first_period_start:]
+    second_period = curve[second_period_start: second_period_end]
+    return first_period, second_period
+
+
+def is_period_stable(
+    curve: numpy.ndarray,
+    period: int = 1,
+    relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
+) -> bool:
+    try:
+        first_period, second_period = return_periods(curve, period=period)
+    except ValueError as err:
+        return False
+    return numpy.allclose(
+        first_period,
+        second_period,
+        rtol=relative_tolerance,
+    )
+
+
 def calculate_states(
     initial_states: list[float],
     parameter: float,
