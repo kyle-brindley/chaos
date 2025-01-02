@@ -26,9 +26,17 @@ Test
 Run
 ===
 
+Example that converges pretty quickly
+
 .. code-block::
 
-   $ python main.py --initial 0.5 --parameter 1.0
+   $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 2.4
+
+Example that does not converge in 100 iterations (or 1e6)
+
+.. code-block::
+
+   $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3 -m 1000000
 
 =====
 Style
