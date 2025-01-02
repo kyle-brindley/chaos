@@ -81,6 +81,17 @@ def is_period_stable(
     )
 
 
+def period_stable(
+    curve: numpy.ndarray,
+    maximum_period: int = 12,
+    relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
+) -> int:
+    for period in range(1, maximum_period + 1):
+        if is_period_stable(curve, period=period, relative_tolerance=relative_tolerance):
+            return period
+    return None
+
+
 def calculate_states(
     initial_states: list[float],
     parameter: float,
@@ -117,16 +128,11 @@ def calculate_states(
             if (
                 # fmt: off
                 states[row][iteration] < 0.0
-                or is_period_stable(
+                or period_stable(
                     states[row][:iteration],
-                    period=1,
+                    maximum_period=12,
                     relative_tolerance=relative_tolerance,
-                )
-                or is_period_stable(
-                    states[row][:iteration],
-                    period=2,
-                    relative_tolerance=relative_tolerance,
-                )
+                ) is not None
                 # fmt: on
             ):
                 break
