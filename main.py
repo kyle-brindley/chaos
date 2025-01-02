@@ -90,10 +90,10 @@ def calculate_states(
             if (
                 # fmt: off
                 states[row][iteration] < 0.0
-                or numpy.isclose(
-                    states[row][iteration],
-                    states[row][previous_iteration],
-                    rtol=relative_tolerance,
+                or is_period_stable(
+                    states[row][:iteration],
+                    period=1,
+                    relative_tolerance=relative_tolerance,
                 )
                 # fmt: on
             ):
