@@ -220,13 +220,11 @@ def calculate_states(
         }
     )
 
-    return states, parameter_periods
+    return data
 
 
 def plot_states(
-    states: numpy.ndarray,
-    parameters: list[float],
-    periods: typing.Optional[list[float]] = None,
+    data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
     """Plot the logistic function results from :meth:`calculate_states`
@@ -236,17 +234,11 @@ def plot_states(
     :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
-    for depth, (parameter, period) in enumerate(zip(parameters, periods)):
-        for curve in states[depth]:
-            matplotlib.pyplot.plot(
-                curve,
-                label=f"$r$: {parameter}; $x_{0}$: {curve[0]}; $period$: {period}",
-            )
+    data.plot.scatter(x="iteration", y="value", hue="r", add_legend=True)
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
     )
-    matplotlib.pyplot.legend(loc="lower right")
     if output is not None:
         matplotlib.pyplot.savefig(output)
     else:
@@ -264,7 +256,7 @@ def main() -> None:
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
 
-    states, periods = calculate_states(
+    data = calculate_states(
         initial_states,
         parameters,
         max_period=max_period,
@@ -272,12 +264,7 @@ def main() -> None:
         relative_tolerance=relative_tolerance,
     )
 
-    plot_states(
-        states,
-        parameters,
-        periods=periods,
-        output=output,
-    )
+    plot_states(data, output=output)
 
 
 if __name__ == "__main__":
