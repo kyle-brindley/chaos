@@ -254,7 +254,7 @@ def calculate_curves(
         numpy.nan,
     )
     states[:, :, 0] = initial_states
-    parameter_periods = [None] * len(parameters)
+    parameter_periods = numpy.full((len(parameters),), numpy.nan)
 
     # TODO: Build the xarray dataset first, then operate on its contents
     # Counter option: Cython-ize the function calculations. I think this is
@@ -274,9 +274,9 @@ def calculate_curves(
                 )
                 for row in range(len(initial_states))
             ]
-            period = periods[0] if numpy.all(periods) else None
+            period = periods[0] if numpy.all(periods) else numpy.nan
             # TODO: add an option to force computation to max iterations
-            if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
+            if numpy.any(states[depth, :, iteration] < 0.0) or not numpy.isnan(period):
                 parameter_periods[depth] = period
                 break
 
@@ -360,7 +360,7 @@ def plot_bifurcation(
     # TODO: Move bifurcation calculation to dedicated function
     bifurcation_data = list()
     for point in data["period"]:
-        period = point.item()
+        period = int(point.item()) if not numpy.isnan(point.item()) else None
         parameter = point["r"].item()
         series = data["value"].sel({"r": parameter, "x_0": initial_state}).to_pandas()
         useful_series = series[series.first_valid_index() : series.last_valid_index()]
