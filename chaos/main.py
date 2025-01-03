@@ -371,6 +371,7 @@ def plot_bifurcation(
         else:
             bifurcation_data.append(useful_series)
 
+    # TODO: add a vertical line or color change at period transitions
     for period, bifurcation in zip(data["r"].values, bifurcation_data):
         matplotlib.pyplot.scatter(
             x=[period] * len(bifurcation),
