@@ -13,9 +13,10 @@ from chaos import __version__
 DESCRIPTION = """Calculate and plot the logistic function:
 `x_{next} = r * x_{current} * (1 - x_{current})`"
 """
+DEFAULT_INITIAL_STATE = [0.25]
+DEFAULT_MAX_PERIOD = 12
 DEFAULT_MAX_ITERATION = 1000
 DEFAULT_RELATIVE_TOLERANCE = 1e-6
-DEFAULT_MAX_PERIOD = 12
 DEFAULT_MARKER_SIZE = 8
 DEFAULT_ITERATION_SAMPLES = None
 
@@ -24,13 +25,6 @@ def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=DESCRIPTION,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "--initial",
-        nargs="+",
-        type=float,
-        required=True,
-        help="The initial state: `x_{0}`",
     )
     # TODO: Add a CLI option to specify a continuous range of parameters
     parser.add_argument(
@@ -46,6 +40,13 @@ def get_parser() -> argparse.ArgumentParser:
         type=float,
         action="append",
         help="Specify range of parameters [start, stop, step]",
+    )
+    parser.add_argument(
+        "--initial",
+        nargs="+",
+        type=float,
+        default=DEFAULT_INITIAL_STATE,
+        help="The initial state: `x_{0}`",
     )
     parser.add_argument(
         "-n",
