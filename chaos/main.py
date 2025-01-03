@@ -16,7 +16,7 @@ DESCRIPTION = """Calculate and plot the logistic function:
 DEFAULT_MAX_ITERATION = 1000
 DEFAULT_RELATIVE_TOLERANCE = 1e-6
 DEFAULT_MAX_PERIOD = 12
-DEFAULT_MARKER_SIZE = 3
+DEFAULT_MARKER_SIZE = 8
 
 
 def get_parser() -> argparse.ArgumentParser:
