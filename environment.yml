@@ -3,6 +3,7 @@ channels:
 
 dependencies:
   - black
+  - h5netcdf
   - matplotlib-base
   - pytest
   - pytest-cov

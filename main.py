@@ -36,7 +36,13 @@ def get_parser() -> argparse.ArgumentParser:
         required=True,
         help="The logistic function parameter: `r`)",
     )
-    # TODO: Add an option to output the xarray dataset. Maybe --output-data?
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=pathlib.Path,
+        default=None,
+        help="Save the calculations to a HDF5 file",
+    )
     parser.add_argument(
         "--plot-curves",
         nargs="?",
@@ -334,6 +340,9 @@ def main() -> None:
         plot_curves(data, output=args.plot_curves)
     if args.plot_bifurcation is not False:
         plot_bifurcation(data, output=args.plot_bifurcation)
+
+    if args.output:
+        data.to_netcdf(args.output, engine="h5netcdf")
 
 
 if __name__ == "__main__":
