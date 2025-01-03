@@ -161,12 +161,17 @@ def test_is_period_stable(curve, period, expected):
 
 
 def test_plot_states():
+    data = main.calculate_states(
+        [0.25],
+        [2.0],
+    )
+
     # No output should raise plot window
     with (
         patch("matplotlib.pyplot.savefig") as mock_save_fig,
         patch("matplotlib.pyplot.show") as mock_show,
     ):
-        main.plot_states([[1.0]], 1.0, output=None)
+        main.plot_states(data, output=None)
         mock_save_fig.assert_not_called()
         mock_show.assert_called_once()
 
@@ -175,6 +180,6 @@ def test_plot_states():
         patch("matplotlib.pyplot.savefig") as mock_save_fig,
         patch("matplotlib.pyplot.show") as mock_show,
     ):
-        main.plot_states([[1.0]], 1.0, output="dummy.png")
+        main.plot_states(data, output="dummy.png")
         mock_save_fig.assert_called_once()
         mock_show.assert_not_called()
