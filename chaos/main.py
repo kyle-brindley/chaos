@@ -259,10 +259,12 @@ def calculate_curves(
     # TODO: Build the xarray dataset first, then operate on its contents
     # Counter option: Cython-ize the function calculations. I think this is
     # possible as a numpy array, but maybe not as an xarray dataset.
+    # Third option: explore multithreading/pool/dask for Python parallel solve
     for depth, parameter in enumerate(parameters):
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
             # TODO: Add alternate functions with the same input form
+            # 1) y = r sin(pi x)?
             states[depth, :, iteration] = logistic(
                 states[depth, :, previous_iteration], parameter
             )
