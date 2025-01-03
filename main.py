@@ -285,11 +285,6 @@ def plot_bifurcation(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
-    if output is not None:
-        matplotlib.pyplot.savefig(output)
-    else:
-        matplotlib.pyplot.show()
-
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
     matplotlib_output(output)
 
