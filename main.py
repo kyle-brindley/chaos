@@ -234,7 +234,7 @@ def plot_states(
     :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
-    data.plot.scatter(x="iteration", y="value", hue="r", add_legend=True)
+    xarray.plot.line(data["value"].sel({"x_0": data["x_0"][0]}), x="iteration", hue="r")
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
