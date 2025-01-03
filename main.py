@@ -285,6 +285,21 @@ def plot_bifurcation(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
+    initial_state = data["x_0"][0]
+    bifurcation_data = list()
+    for point in data["period"]:
+        period = point.item()
+        parameter = point["r"].item()
+        # NOTE: assumes that initial states result in the same period
+        series = data["value"].sel({"r": parameter, "x_0": initial_state}).to_pandas()
+        vector = series[series.first_valid_index():series.last_valid_index()]
+        if period is not None:
+            bifurcation_data.append(vector[-period:])
+        else:
+            bifurcation_data.append(vector)
+
+    for period, bifurcation in zip(data["r"].values, bifurcation_data):
+        matplotlib.pyplot.scatter(x=[period] * len(bifurcation), y=bifurcation)
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
     matplotlib_output(output)
 
@@ -309,6 +324,7 @@ def main() -> None:
     )
 
     plot_curves(data, output=output)
+    plot_bifurcation(data, output=output)
 
 
 if __name__ == "__main__":
