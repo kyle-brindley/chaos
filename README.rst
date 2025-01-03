@@ -33,33 +33,33 @@ Example that converges pretty quickly
 
 .. code-block::
 
-   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 2.4
+   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 2.4 --plot-curves
 
 Example that "converges" to period 2 (bouncing between two states)
 
 .. code-block::
 
-   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 3.1
+   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 3.1 --plot-curves
 
 Example that "converges" to period 2 in more than 100 iterations
 
 .. code-block::
 
-   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 3 -m 1000
+   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 3 --max-iteration 1000 --plot-curves
 
 Example that "converges" to period 4
 
 .. code-block::
 
-   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 3.4
+   $ python chaos.main --initial 0.3 0.4 0.5 0.6 --parameter 3.4 --plot-curves
 
 Example of a multi-parameter study with periods 1, 2, and 4
 
 .. code-block::
 
-   $ python chaos.main --initial 0.25 --parameter 2 3.1 3.5
+   $ python chaos.main --initial 0.25 --parameter 2 3.1 3.5 --plot-curves
 
-Begin exploring the bifurcation plot
+Begin exploring the bifurcation plot with an interactive matplotlib window
 
 .. code-block::
 
