@@ -262,6 +262,7 @@ def calculate_curves(
     for depth, parameter in enumerate(parameters):
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
+            # TODO: Add alternate functions with the same input form
             states[depth, :, iteration] = logistic(
                 states[depth, :, previous_iteration], parameter
             )
@@ -274,8 +275,7 @@ def calculate_curves(
                 for row in range(len(initial_states))
             ]
             period = periods[0] if numpy.all(periods) else None
-            # TODO: add an option to force computation to the full max
-            # iterations
+            # TODO: add an option to force computation to max iterations
             if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
                 parameter_periods[depth] = period
                 break
@@ -402,7 +402,7 @@ def main() -> None:
         parameters = numpy.unique(parameters)
 
         data = calculate_curves(
-            args.initial_states,
+            args.initial,
             parameters,
             max_period=args.max_period,
             max_iteration=args.max_iteration,
