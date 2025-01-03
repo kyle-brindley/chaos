@@ -39,6 +39,13 @@ def get_parser() -> argparse.ArgumentParser:
         help="The logistic function parameter: `r`)",
     )
     parser.add_argument(
+        "--parameter-arange",
+        nargs=3,
+        type=float,
+        action="append",
+        help="Specify range of parameters [start, stop, step]",
+    )
+    parser.add_argument(
         "-o",
         "--output",
         type=pathlib.Path,
@@ -184,7 +191,7 @@ def logistic(x: float, r: float) -> float:
 
 def calculate_curves(
     initial_states: list[float],
-    parameters: list[float],
+    parameters: typing.Iterable[float],
     max_period: int = DEFAULT_MAX_PERIOD,
     max_iteration: float = DEFAULT_MAX_ITERATION,
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
@@ -198,14 +205,15 @@ def calculate_curves(
     Implemented "stable" exit conditions:
 
     * Calculation returns a negative number
-    * Calculation returns the same number as input within the relative tolerance
+    * Calculation returns the same number as input within relative tolerance
     * Two repeated series of up to length ``max_period`` exist
 
     :param initial_states: list of initial states :math:`x_{0}`
     :param parameters: list of logistic function parameters :math:`r`
+    :param max_period: the maximum period to search for in the curve
+    :param max_iteration: the maximum number of iterations to compute
     :param relative_tolerance: the relative tolerance on float equality
         comparisons
-    :param max_iteration: the maximum number of iterations to compute
 
     :returns: an array of evaluated logistic function results from the initial
         states and logistic function parameters
@@ -260,6 +268,11 @@ def matplotlib_output(
     title: str,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
+    """Attach matplotlib meta and plot or save figure
+
+    :param title: Title of matplotlib plot
+    :param output: save to file instead of raising a plot window
+    """
     matplotlib.pyplot.title(title)
     if output is not None:
         matplotlib.pyplot.savefig(output)
@@ -273,10 +286,8 @@ def plot_curves(
 ) -> None:
     """Plot the logistic function results from :meth:`calculate_curves`
 
-    :param states: Array of logistic function calculations with dimensions
-        [curve, iteration]
-    :param parameters: vector of logistic function parameters :math:`r`
-    :param filepath: save to file instead of raising a plot window
+    :param data: XArray Dataset of logistic function calculations
+    :param output: save to file instead of raising a plot window
     """
     line_styles = itertools.cycle(["-", "--", "-.", ":"])
     labels = [
@@ -304,6 +315,11 @@ def plot_bifurcation(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
+    """Plot the bifurcation periods of function calculations
+
+    :param data: XArray Dataset of logistic function calculations
+    :param output: save to file instead of raising a plot window
+    """
     # NOTE: assumes that initial states result in the same period
     initial_state = data["x_0"][0]
 
@@ -333,10 +349,15 @@ def main() -> None:
     args = parser.parse_args()
 
     initial_states = args.initial
-    parameters = args.parameter
     max_period = args.max_period
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
+
+    parameters = numpy.array(args.parameter)
+    if args.parameter_arange is not None:
+        for arange_args in args.parameter_arange:
+            parameters = numpy.concatenate((parameters, numpy.arange(*arange_args)))
+    parameters = numpy.unique(parameters)
 
     data = calculate_curves(
         initial_states,
