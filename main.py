@@ -210,8 +210,8 @@ def calculate_states(
 
 def plot_states(
     states: numpy.ndarray,
-    parameters: float,
-    period: typing.Optional[int] = None,
+    parameters: list[float],
+    periods: typing.Optional[list[float]] = None,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
     """Plot the logistic function results from :meth:`calculate_states`
@@ -221,9 +221,9 @@ def plot_states(
     :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
-    for depth, parameter in enumerate(parameters):
+    for depth, (parameter, period) in enumerate(zip(parameters, periods)):
         for curve in states[depth]:
-            matplotlib.pyplot.plot(curve, label=f"$r$: {parameter}; $x_{0}$: {curve[0]}")
+            matplotlib.pyplot.plot(curve, label=f"$r$: {parameter}; $x_{0}$: {curve[0]}; $period$: {period}")
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
@@ -257,6 +257,7 @@ def main() -> None:
     plot_states(
         states,
         parameters,
+        periods=periods,
         output=output,
     )
 
