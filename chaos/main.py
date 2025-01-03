@@ -17,6 +17,7 @@ DEFAULT_MAX_ITERATION = 1000
 DEFAULT_RELATIVE_TOLERANCE = 1e-6
 DEFAULT_MAX_PERIOD = 12
 DEFAULT_MARKER_SIZE = 8
+DEFAULT_ITERATION_SAMPLES = None
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -70,6 +71,18 @@ def get_parser() -> argparse.ArgumentParser:
         help="Use as a flag to open the plot window or provide a file path",
     )
     parser.add_argument(
+        "--marker-size",
+        type=float,
+        default=DEFAULT_MARKER_SIZE,
+        help="The marker size in bifurcation plot",
+    )
+    parser.add_argument(
+        "--iteration-samples",
+        type=int,
+        default=DEFAULT_MARKER_SIZE,
+        help="Subsample of iterations to plot when no period is found",
+    )
+    parser.add_argument(
         "-n",
         "--max-period",
         type=int,
@@ -90,12 +103,6 @@ def get_parser() -> argparse.ArgumentParser:
         type=float,
         default=DEFAULT_RELATIVE_TOLERANCE,
         help="The relative tolerance on float equality comparisons",
-    )
-    parser.add_argument(
-        "--marker-size",
-        type=float,
-        default=DEFAULT_MARKER_SIZE,
-        help="The marker size in bifurcation plot",
     )
     parser.add_argument(
         "-V",
@@ -322,6 +329,7 @@ def plot_bifurcation(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
     marker_size: float = DEFAULT_MARKER_SIZE,
+    iteration_samples: typing.Optional[int] = DEFAULT_ITERATION_SAMPLES,
 ) -> None:
     """Plot the bifurcation periods of function calculations
 
@@ -338,11 +346,13 @@ def plot_bifurcation(
         period = point.item()
         parameter = point["r"].item()
         series = data["value"].sel({"r": parameter, "x_0": initial_state}).to_pandas()
-        vector = series[series.first_valid_index() : series.last_valid_index()]
+        useful_series = series[series.first_valid_index() : series.last_valid_index()]
         if period is not None:
-            bifurcation_data.append(vector[-period:])
+            bifurcation_data.append(useful_series[-period:])
+        elif iteration_samples is not None:
+            bifurcation_data.append(useful_series.sample(n=iteration_samples))
         else:
-            bifurcation_data.append(vector)
+            bifurcation_data.append(useful_series)
 
     for period, bifurcation in zip(data["r"].values, bifurcation_data):
         matplotlib.pyplot.scatter(
@@ -388,7 +398,8 @@ def main() -> None:
         plot_bifurcation(
             data,
             output=args.plot_bifurcation,
-            marker_size=args.marker_size
+            marker_size=args.marker_size,
+            iteration_samples=args.iteration_samples,
         )
 
     if args.output:
