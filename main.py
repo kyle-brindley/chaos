@@ -1,6 +1,7 @@
 import typing
 import pathlib
 import argparse
+import itertools
 
 import numpy
 import xarray
@@ -234,7 +235,15 @@ def plot_states(
     :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
-    xarray.plot.line(data["value"].sel({"x_0": data["x_0"][0]}), x="iteration", hue="r")
+    line_styles = itertools.cycle(["-", "--", "-.", ":"])
+    for initial_state in data["x_0"]:
+        matplotlib.pyplot.gca().set_prop_cycle(None)
+        xarray.plot.line(
+            data["value"].sel({"x_0": initial_state}),
+            x="iteration",
+            hue="r",
+            linestyle=next(line_styles),
+        )
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
