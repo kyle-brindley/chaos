@@ -48,41 +48,6 @@ def get_parser() -> argparse.ArgumentParser:
         help="Specify range of parameters [start, stop, step]",
     )
     parser.add_argument(
-        "-o",
-        "--output",
-        type=pathlib.Path,
-        default=None,
-        help="Save the calculations to a HDF5 file",
-    )
-    parser.add_argument(
-        "--plot-curves",
-        nargs="?",
-        type=pathlib.Path,
-        default=False,
-        const=None,
-        help="Use as a flag to open the plot window or provide a file path",
-    )
-    parser.add_argument(
-        "--plot-bifurcation",
-        nargs="?",
-        type=pathlib.Path,
-        default=False,
-        const=None,
-        help="Use as a flag to open the plot window or provide a file path",
-    )
-    parser.add_argument(
-        "--marker-size",
-        type=float,
-        default=DEFAULT_MARKER_SIZE,
-        help="The marker size in bifurcation plot",
-    )
-    parser.add_argument(
-        "--iteration-samples",
-        type=int,
-        default=DEFAULT_MARKER_SIZE,
-        help="Subsample of iterations to plot when no period is found",
-    )
-    parser.add_argument(
         "-n",
         "--max-period",
         type=int,
@@ -104,12 +69,54 @@ def get_parser() -> argparse.ArgumentParser:
         default=DEFAULT_RELATIVE_TOLERANCE,
         help="The relative tolerance on float equality comparisons",
     )
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=pathlib.Path,
+        default=None,
+        help="Save the calculations to a HDF5 file",
+    )
+
+    plot_curves_group = parser.add_argument_group(title="Curves plot")
+    plot_curves_group.add_argument(
+        "--plot-curves",
+        nargs="?",
+        type=pathlib.Path,
+        default=False,
+        const=None,
+        help="Use as a flag to open the plot window or provide a file path",
+    )
+
+    plot_bifurcation_group = parser.add_argument_group(title="Bifurcation plot")
+    plot_bifurcation_group.add_argument(
+        "--plot-bifurcation",
+        nargs="?",
+        type=pathlib.Path,
+        default=False,
+        const=None,
+        help="Use as a flag to open the plot window or provide a file path",
+    )
+    plot_bifurcation_group.add_argument(
+        "--marker-size",
+        type=float,
+        default=DEFAULT_MARKER_SIZE,
+        help="The marker size in bifurcation plot",
+    )
+    plot_bifurcation_group.add_argument(
+        "--iteration-samples",
+        type=int,
+        default=DEFAULT_MARKER_SIZE,
+        help="Subsample of iterations to plot when no period is found",
+    )
+
     parser.add_argument(
         "-V",
         "--version",
         action="version",
         version=__version__,
     )
+
     return parser
 
 
