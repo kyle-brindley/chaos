@@ -306,7 +306,7 @@ def plot_bifurcation(
             bifurcation_data.append(vector)
 
     for period, bifurcation in zip(data["r"].values, bifurcation_data):
-        matplotlib.pyplot.scatter(x=[period] * len(bifurcation), y=bifurcation, marker=".")
+        matplotlib.pyplot.scatter(x=[period] * len(bifurcation), y=bifurcation, marker=".", color="b")
 
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
     matplotlib_output(title, output=output)
