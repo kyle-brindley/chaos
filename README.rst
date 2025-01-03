@@ -4,6 +4,14 @@ Chaos
 
 Playing with the ideas and images from the early days of chaos theory.
 
+=====
+Clone
+=====
+
+.. code-block::
+
+   $ git clone git@github.com:kyle-brindley/chaos.git
+
 ===========
 Environment
 ===========
@@ -12,14 +20,6 @@ Environment
 
    $ conda env create --name chaos-env --file environment.yml
    $ conda activate chaos-env
-
-=====
-Clone
-=====
-
-.. code-block::
-
-   $ git clone git@github.com:kyle-brindley/chaos.git
 
 ===
 Run
