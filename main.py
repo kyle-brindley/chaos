@@ -107,16 +107,16 @@ def stable_period(
 
 def calculate_states(
     initial_states: list[float],
-    parameter: float,
+    parameters: list[float],
     max_period: int = DEFAULT_MAX_PERIOD,
     max_iteration: float = DEFAULT_MAX_ITERATION,
     relative_tolerance: float = DEFAULT_RELATIVE_TOLERANCE,
 ) -> tuple[numpy.ndarray, list]:
     """Calculate a range of logistic function results from initial states
 
-    Returns an array of logistic function evaluations from initial states and
-    the logistic function parameter. Exits the calculation early if the function
-    state stabilizes, leaving NaN where calculation was discontinued.
+    Returns an array of logistic function evaluations from initial state(s) and
+    the logistic function parameter(s). Exits the calculation early if the
+    function state stabilizes, leaving NaN where calculation was discontinued.
 
     Implemented "stable" exit conditions:
 
@@ -124,44 +124,41 @@ def calculate_states(
     * Calculation returns the same number as input within the relative tolerance
 
     :param initial_states: list of initial states :math:`x_{0}`
-    :param parameter: logistic function parameter :math:`r`
+    :param parameters: list of logistic function parameters :math:`r`
     :param relative_tolerance: the relative tolerance on float equality
         comparisons
     :param max_iteration: the maximum number of iterations to compute
 
     :returns: an array of evaluated logistic function results from the initial
-        states and logistic function parameter and a list of the associated
-        periods
+        states and logistic function parameters
     """
     states = numpy.full(
-        (len(initial_states), max_iteration),
+        (len(parameters), len(initial_states), max_iteration),
         numpy.nan,
     )
-    periods = numpy.full((len(initial_states),), None)
 
-    for row, initial_state in enumerate(initial_states):
-        states[row][0] = initial_state
-        for iteration in range(1, max_iteration):
-            previous_iteration = iteration - 1
-            states[row][iteration] = logistic(
-                states[row][previous_iteration], parameter
-            )
-            periods[row] = stable_period(
-                states[row][:iteration],
-                max_period=max_period,
-                relative_tolerance=relative_tolerance,
-            )
-            if states[row][iteration] < 0.0 or periods[row] is not None:
-                break
+    for depth, parameter in enumerate(parameters):
+        for row, initial_state in enumerate(initial_states):
+            states[depth][row][0] = initial_state
+            for iteration in range(1, max_iteration):
+                previous_iteration = iteration - 1
+                states[depth][row][iteration] = logistic(
+                    states[depth][row][previous_iteration], parameter
+                )
+                period = stable_period(
+                    states[depth][row][:iteration],
+                    max_period=max_period,
+                    relative_tolerance=relative_tolerance,
+                )
+                if states[depth][row][iteration] < 0.0 or period is not None:
+                    break
 
-    period = periods[0] if numpy.all(periods == periods[0]) else None
-
-    return states, period
+    return states
 
 
 def plot_states(
     states: numpy.ndarray,
-    parameter: float,
+    parameters: float,
     period: typing.Optional[int] = None,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
@@ -169,15 +166,15 @@ def plot_states(
 
     :param states: Array of logistic function calculations with dimensions
         [curve, iteration]
-    :param parameter: logistic function parameter :math:`r`
+    :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
-    for curve in states:
-        matplotlib.pyplot.plot(curve, label=f"$x_{0}$: {curve[0]}")
+    for depth, parameter in enumerate(parameters):
+        for curve in states[depth]:
+            matplotlib.pyplot.plot(curve, label=f"$r$: {parameter}; $x_{0}$: {curve[0]}")
 
     matplotlib.pyplot.title(
-        r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$: r = "
-        + f"{parameter}, period = {period}"
+        r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
     )
     matplotlib.pyplot.legend(loc="lower right")
     if output is not None:
@@ -200,6 +197,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--parameter",
+        nargs="+",
         type=float,
         required=True,
         help="The logistic function parameter: `r`)",
@@ -240,15 +238,15 @@ def main() -> None:
     args = parser.parse_args()
 
     initial_states = args.initial
-    parameter = args.parameter
+    parameters = args.parameter
     output = args.output
     max_period = args.max_period
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
 
-    states, period = calculate_states(
+    states = calculate_states(
         initial_states,
-        parameter,
+        parameters,
         max_period=max_period,
         max_iteration=max_iteration,
         relative_tolerance=relative_tolerance,
@@ -256,8 +254,7 @@ def main() -> None:
 
     plot_states(
         states,
-        parameter,
-        period=period,
+        parameters,
         output=output,
     )
 
