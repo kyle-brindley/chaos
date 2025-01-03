@@ -9,4 +9,5 @@ dependencies:
   - pytest-cov
   - pytest-xdist
   - python
+  - python-build
   - xarray

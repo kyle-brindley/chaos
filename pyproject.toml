@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chaos"
+authors = [
+    {name = "Kyle Brindley", email = "kyle.brindley@gmail.com"},
+]
+description = "Playing with the ideas and images from the early days of chaos theory."
+readme = "README.rst"
+requires-python = ">=3.9"
+license = {text = "BSD-3-Clause"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dynamic = ["version"]
+dependencies = [
+    "h5netcdf",
+    "matplotlib",
+    "numpy",
+    "xarray"
+]
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[project.scripts]
+chaos = "chaos.main:main"
+
+[project.urls]
+repository = "https://github.com/kyle-brindley/chaos"
