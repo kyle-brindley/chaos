@@ -236,6 +236,17 @@ def calculate_curves(
     return data
 
 
+def matplotlib_output(
+    title: str,
+    output: typing.Optional[pathlib.Path] = None,
+) -> None:
+    matplotlib.pyplot.title(title)
+    if output is not None:
+        matplotlib.pyplot.savefig(output)
+    else:
+        matplotlib.pyplot.show()
+
+
 def plot_curves(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
@@ -265,18 +276,22 @@ def plot_curves(
             loc="lower right",
         )
 
-    matplotlib.pyplot.title(
-        r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
-    )
+    title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
+    matplotlib_output(output)
+
+
+# TODO: create the bifurcation plot
+def plot_bifurcation(
+    data: xarray.Dataset,
+    output: typing.Optional[pathlib.Path] = None,
+) -> None:
     if output is not None:
         matplotlib.pyplot.savefig(output)
     else:
         matplotlib.pyplot.show()
 
-
-# TODO: create the bifurcation plot
-def plot_bifurcation():
-    pass
+    title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
+    matplotlib_output(output)
 
 
 def main() -> None:
