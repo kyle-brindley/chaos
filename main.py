@@ -11,8 +11,8 @@ import matplotlib.pyplot
 DESCRIPTION = """Calculate and plot the logistic function:
 `x_{next} = r * x_{current} * (1 - x_{current})`"
 """
-DEFAULT_MAX_ITERATION = 100
-DEFAULT_RELATIVE_TOLERANCE = 1e-4
+DEFAULT_MAX_ITERATION = 200
+DEFAULT_RELATIVE_TOLERANCE = 1e-6
 DEFAULT_MAX_PERIOD = 12
 
 
