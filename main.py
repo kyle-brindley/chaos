@@ -35,6 +35,9 @@ def get_parser() -> argparse.ArgumentParser:
         required=True,
         help="The logistic function parameter: `r`)",
     )
+    # TODO: convert to a flag/file option named --iteration-plot or
+    # --trace-plot or something
+    # TODO: Add an option to output the xarray dataset. Maybe --output-data?
     parser.add_argument(
         "-o",
         "--output",
@@ -56,6 +59,7 @@ def get_parser() -> argparse.ArgumentParser:
         default=DEFAULT_MAX_ITERATION,
         help="The maximum number of iterations to calculate",
     )
+    # TODO: add an option to force computation to the full max iterations
     parser.add_argument(
         "-t",
         "--relative-tolerance",
@@ -173,6 +177,7 @@ def calculate_curves(
 
     * Calculation returns a negative number
     * Calculation returns the same number as input within the relative tolerance
+    * Two repeated series of up to length ``max_period`` exist
 
     :param initial_states: list of initial states :math:`x_{0}`
     :param parameters: list of logistic function parameters :math:`r`
@@ -208,6 +213,8 @@ def calculate_curves(
                 for row in range(len(initial_states))
             ]
             period = periods[0] if numpy.all(periods) else None
+            # TODO: add an option to force computation to the full max
+            # iterations
             if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
                 parameter_periods[depth] = period
                 break
@@ -239,7 +246,9 @@ def plot_curves(
     :param filepath: save to file instead of raising a plot window
     """
     line_styles = itertools.cycle(["-", "--", "-.", ":"])
-    labels = [f"$r$={point['r'].item()}, $period$={point.item()}" for point in data["period"]]
+    labels = [
+        f"$r$={point['r'].item()}, $period$={point.item()}" for point in data["period"]
+    ]
     for initial_state in data["x_0"]:
         lines = matplotlib.pyplot.gca().set_prop_cycle(None)
         xarray.plot.line(
