@@ -13,17 +13,21 @@ Environment
    $ conda env create --name chaos-env --file environment.yml
    $ conda activate chaos-env
 
-====
-Test
-====
+=====
+Clone
+=====
 
 .. code-block::
 
-   $ pytest
+   $ git clone git@github.com:kyle-brindley/chaos.git
 
 ===
 Run
 ===
+
+This project can be run directly from the repository with the commands below.
+Alternately, use a `pip` editable install, `pip install -e .`, and run as an
+executable with `chaos` instead of `python chaos.main`.
 
 Example that converges pretty quickly
 
@@ -72,6 +76,14 @@ Save the image
    sys	0m0.146s
 
 .. image:: bifurcation.png
+
+====
+Test
+====
+
+.. code-block::
+
+   $ pytest
 
 =====
 Style
