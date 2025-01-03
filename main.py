@@ -238,9 +238,8 @@ def plot_states(
     :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
-    # TODO: Put the period solution back into the legend
     line_styles = itertools.cycle(["-", "--", "-.", ":"])
-    labels = [f"$r$: {r}" for r in data["r"].values]
+    labels = [f"$r$={point['r'].item()}, $period$={point.item()}" for point in data["period"]]
     for initial_state in data["x_0"]:
         lines = matplotlib.pyplot.gca().set_prop_cycle(None)
         xarray.plot.line(
