@@ -49,6 +49,12 @@ Example that "converges" to period 4
 
    $ python main.py --initial 0.3 0.4 0.5 0.6 --parameter 3.4
 
+Example of a multi-parameter study with periods 1, 2, and 4
+
+.. code-block::
+
+   $ python main.py --initial 0.25 --parameter 2 3.1 3.5
+
 =====
 Style
 =====
