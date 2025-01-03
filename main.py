@@ -35,17 +35,22 @@ def get_parser() -> argparse.ArgumentParser:
         required=True,
         help="The logistic function parameter: `r`)",
     )
-    # TODO: convert to a flag/file option named --iteration-plot or
-    # --trace-plot or something. As a flag, show plot. As an option, save to
-    # file.
-    # TODO: create the bifurcation plot. Maybe --bifurcation-plot?
     # TODO: Add an option to output the xarray dataset. Maybe --output-data?
     parser.add_argument(
-        "-o",
-        "--output",
+        "--plot-curves",
+        nargs="?",
         type=pathlib.Path,
-        default=None,
-        help="The output plot absolute or relative path",
+        default=False,
+        const=None,
+        help="Use as a flag to open the plot window or provide a file path",
+    )
+    parser.add_argument(
+        "--plot-bifurcation",
+        nargs="?",
+        type=pathlib.Path,
+        default=False,
+        const=None,
+        help="Use as a flag to open the plot window or provide a file path",
     )
     parser.add_argument(
         "-n",
@@ -277,7 +282,7 @@ def plot_curves(
         )
 
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
-    matplotlib_output(output)
+    matplotlib_output(title, output=output)
 
 
 def plot_bifurcation(
@@ -287,6 +292,7 @@ def plot_bifurcation(
     # NOTE: assumes that initial states result in the same period
     initial_state = data["x_0"][0]
 
+    # TODO: Move bifurcation calculation to dedicated function
     bifurcation_data = list()
     for point in data["period"]:
         period = point.item()
@@ -300,8 +306,9 @@ def plot_bifurcation(
 
     for period, bifurcation in zip(data["r"].values, bifurcation_data):
         matplotlib.pyplot.scatter(x=[period] * len(bifurcation), y=bifurcation)
+
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
-    matplotlib_output(output)
+    matplotlib_output(title, output=output)
 
 
 def main() -> None:
@@ -310,7 +317,6 @@ def main() -> None:
 
     initial_states = args.initial
     parameters = args.parameter
-    output = args.output
     max_period = args.max_period
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
@@ -323,8 +329,10 @@ def main() -> None:
         relative_tolerance=relative_tolerance,
     )
 
-    plot_curves(data, output=output)
-    plot_bifurcation(data, output=output)
+    if args.plot_curves is not False:
+        plot_curves(data, output=args.plot_curves)
+    if args.plot_bifurcation is not False:
+        plot_bifurcation(data, output=args.plot_bifurcation)
 
 
 if __name__ == "__main__":
