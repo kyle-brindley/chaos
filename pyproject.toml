@@ -22,6 +22,9 @@ dependencies = [
     "xarray"
 ]
 
+[tool.setuptools_scm]
+write_to = "chaos/_version.py"
+
 [tool.setuptools]
 zip-safe = false
 

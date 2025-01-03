@@ -7,6 +7,8 @@ import numpy
 import xarray
 import matplotlib.pyplot
 
+from chaos import __version__
+
 
 DESCRIPTION = """Calculate and plot the logistic function:
 `x_{next} = r * x_{current} * (1 - x_{current})`"
@@ -80,6 +82,12 @@ def get_parser() -> argparse.ArgumentParser:
         type=float,
         default=DEFAULT_RELATIVE_TOLERANCE,
         help="The relative tolerance on float equality comparisons",
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=__version__,
     )
     return parser
 
@@ -305,14 +313,16 @@ def plot_bifurcation(
         period = point.item()
         parameter = point["r"].item()
         series = data["value"].sel({"r": parameter, "x_0": initial_state}).to_pandas()
-        vector = series[series.first_valid_index():series.last_valid_index()]
+        vector = series[series.first_valid_index() : series.last_valid_index()]
         if period is not None:
             bifurcation_data.append(vector[-period:])
         else:
             bifurcation_data.append(vector)
 
     for period, bifurcation in zip(data["r"].values, bifurcation_data):
-        matplotlib.pyplot.scatter(x=[period] * len(bifurcation), y=bifurcation, marker=".", color="b")
+        matplotlib.pyplot.scatter(
+            x=[period] * len(bifurcation), y=bifurcation, marker=".", color="b"
+        )
 
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
     matplotlib_output(title, output=output)
