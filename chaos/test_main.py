@@ -4,7 +4,7 @@ from contextlib import nullcontext as does_not_raise
 import numpy
 import pytest
 
-import main
+from chaos import main
 
 
 @pytest.mark.parametrize(
