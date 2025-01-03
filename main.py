@@ -18,7 +18,7 @@ DEFAULT_MAX_PERIOD = 12
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=DESCRIPTION,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--initial",
@@ -195,11 +195,14 @@ def calculate_states(
             states[depth, :, iteration] = logistic(
                 states[depth, :, previous_iteration], parameter
             )
-            periods = [stable_period(
-                states[depth, row, :iteration],
-                max_period=max_period,
-                relative_tolerance=relative_tolerance,
-            ) for row in range(len(initial_states))]
+            periods = [
+                stable_period(
+                    states[depth, row, :iteration],
+                    max_period=max_period,
+                    relative_tolerance=relative_tolerance,
+                )
+                for row in range(len(initial_states))
+            ]
             period = periods[0] if numpy.all(periods) else None
             if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
                 parameter_periods[depth] = period
@@ -223,7 +226,10 @@ def plot_states(
     """
     for depth, (parameter, period) in enumerate(zip(parameters, periods)):
         for curve in states[depth]:
-            matplotlib.pyplot.plot(curve, label=f"$r$: {parameter}; $x_{0}$: {curve[0]}; $period$: {period}")
+            matplotlib.pyplot.plot(
+                curve,
+                label=f"$r$: {parameter}; $x_{0}$: {curve[0]}; $period$: {period}",
+            )
 
     matplotlib.pyplot.title(
         r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
