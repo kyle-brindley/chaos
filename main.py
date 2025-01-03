@@ -36,7 +36,8 @@ def get_parser() -> argparse.ArgumentParser:
         help="The logistic function parameter: `r`)",
     )
     # TODO: convert to a flag/file option named --iteration-plot or
-    # --trace-plot or something
+    # --trace-plot or something. As a flag, show plot. As an option, save to
+    # file.
     # TODO: Add an option to output the xarray dataset. Maybe --output-data?
     parser.add_argument(
         "-o",
