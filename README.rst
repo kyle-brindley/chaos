@@ -55,6 +55,12 @@ Example of a multi-parameter study with periods 1, 2, and 4
 
    $ python main.py --initial 0.25 --parameter 2 3.1 3.5
 
+Begin exploring the bifurcation plot
+
+.. code-block::
+
+   $ python main.py --initial 0.25 --parameter 0.0 0.99 1.01 1.5 2.0 3.1 3.5 3.8 4.0 --plot-bifurcation
+
 =====
 Style
 =====
