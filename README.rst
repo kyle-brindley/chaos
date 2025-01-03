@@ -61,6 +61,18 @@ Begin exploring the bifurcation plot
 
    $ python main.py --initial 0.25 --parameter 0.0 0.99 1.01 1.5 2.0 2.99 3.01 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 4.0 --plot-bifurcation
 
+Save the image
+
+.. code-block::
+
+   $ time python main.py --initial 0.25 --parameter 0.0 0.99 1.01 1.5 2.0 2.99 3.01 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 4.0 --plot-bifurcation bifurcation.png
+
+   real	0m4.462s
+   user	0m5.096s
+   sys	0m0.146s
+
+.. image:: bifurcation.png
+
 =====
 Style
 =====
