@@ -240,13 +240,19 @@ def plot_states(
     """
     # TODO: Put the period solution back into the legend
     line_styles = itertools.cycle(["-", "--", "-.", ":"])
+    labels = [f"$r$: {r}" for r in data["r"].values]
     for initial_state in data["x_0"]:
-        matplotlib.pyplot.gca().set_prop_cycle(None)
+        lines = matplotlib.pyplot.gca().set_prop_cycle(None)
         xarray.plot.line(
             data["value"].sel({"x_0": initial_state}),
             x="iteration",
             hue="r",
             linestyle=next(line_styles),
+        )
+        matplotlib.pyplot.legend(
+            handles=lines,
+            labels=labels,
+            loc="lower right",
         )
 
     matplotlib.pyplot.title(
