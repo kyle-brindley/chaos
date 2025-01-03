@@ -28,6 +28,7 @@ def get_parser() -> argparse.ArgumentParser:
         required=True,
         help="The initial state: `x_{0}`",
     )
+    # TODO: Add a CLI option to specify a continuous range of parameters
     parser.add_argument(
         "--parameter",
         nargs="+",
