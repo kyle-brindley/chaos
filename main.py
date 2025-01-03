@@ -136,22 +136,22 @@ def calculate_states(
         (len(parameters), len(initial_states), max_iteration),
         numpy.nan,
     )
+    states[:, :, 0] = initial_states
 
     for depth, parameter in enumerate(parameters):
-        for row, initial_state in enumerate(initial_states):
-            states[depth][row][0] = initial_state
-            for iteration in range(1, max_iteration):
-                previous_iteration = iteration - 1
-                states[depth][row][iteration] = logistic(
-                    states[depth][row][previous_iteration], parameter
-                )
-                period = stable_period(
-                    states[depth][row][:iteration],
-                    max_period=max_period,
-                    relative_tolerance=relative_tolerance,
-                )
-                if states[depth][row][iteration] < 0.0 or period is not None:
-                    break
+        for iteration in range(1, max_iteration):
+            previous_iteration = iteration - 1
+            states[depth, :, iteration] = logistic(
+                states[depth, :, previous_iteration], parameter
+            )
+            periods = [stable_period(
+                states[depth, row, :iteration],
+                max_period=max_period,
+                relative_tolerance=relative_tolerance,
+            ) for row in range(len(initial_states))]
+            period = periods[0] if numpy.all(periods) else None
+            if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
+                break
 
     return states
 
