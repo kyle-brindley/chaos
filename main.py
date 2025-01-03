@@ -1,9 +1,9 @@
-import math
 import typing
 import pathlib
 import argparse
 
 import numpy
+import xarray
 import matplotlib.pyplot
 
 
@@ -207,6 +207,18 @@ def calculate_states(
             if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
                 parameter_periods[depth] = period
                 break
+
+    data = xarray.Dataset(
+        data_vars={
+            "value": (["r", "x_0", "iteration"], states),
+            "period": (["r"], parameter_periods),
+        },
+        coords={
+            "r": parameters,
+            "x_0": initial_states,
+            "iteration": range(max_iteration),
+        }
+    )
 
     return states, parameter_periods
 
