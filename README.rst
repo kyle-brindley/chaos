@@ -90,6 +90,20 @@ detection may require more calculation iterations to refine the image.
 
 .. image:: bifurcation_arange.png
 
+You can clean up the plot somewhat by limiting the number of iterations plotted
+for calculations with no period.
+
+.. code-block::
+
+   $ time python -m chaos.main --initial 0.25 --parameter 0.99 1.01 2.99 3.01 --parameter-arange 0.0 0.99 0.05 --parameter-arange 1.05 2.99 0.05 --parameter-arange 3.01 4. 0.01 --max-iteration 2000 --iteration-samples=50 --plot-bifurcation bifurcation_subsamples.png
+
+.. image:: bifurcation_subsamples.png
+
+This can have the side effect of hiding calculations which should have
+presented a period, but did not resolve within the maximum number of
+iterations. It is not recommended when exploring the correctness of the
+calculated results.
+
 ====
 Test
 ====
