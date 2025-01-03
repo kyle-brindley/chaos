@@ -26,8 +26,8 @@ Run
 ===
 
 This project can be run directly from the repository with the commands below.
-Alternately, use a `pip` editable install, `pip install -e .`, and run as an
-executable with `chaos` instead of `python chaos.main`.
+Alternately, use a ``pip`` editable install, ``pip install -e .``, and run as
+an executable with ``chaos`` instead of ``python chaos.main``.
 
 Example that converges pretty quickly
 
