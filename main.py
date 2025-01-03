@@ -156,7 +156,7 @@ def logistic(x: float, r: float) -> float:
     return r * x * (1 - x)
 
 
-def calculate_states(
+def calculate_curves(
     initial_states: list[float],
     parameters: list[float],
     max_period: int = DEFAULT_MAX_PERIOD,
@@ -227,11 +227,11 @@ def calculate_states(
     return data
 
 
-def plot_states(
+def plot_curves(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
-    """Plot the logistic function results from :meth:`calculate_states`
+    """Plot the logistic function results from :meth:`calculate_curves`
 
     :param states: Array of logistic function calculations with dimensions
         [curve, iteration]
@@ -263,6 +263,11 @@ def plot_states(
         matplotlib.pyplot.show()
 
 
+# TODO: create the bifurcation plot
+def plot_bifurcation():
+    pass
+
+
 def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
@@ -274,7 +279,7 @@ def main() -> None:
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
 
-    data = calculate_states(
+    data = calculate_curves(
         initial_states,
         parameters,
         max_period=max_period,
@@ -282,7 +287,7 @@ def main() -> None:
         relative_tolerance=relative_tolerance,
     )
 
-    plot_states(data, output=output)
+    plot_curves(data, output=output)
 
 
 if __name__ == "__main__":
