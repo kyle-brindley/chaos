@@ -280,17 +280,17 @@ def plot_curves(
     matplotlib_output(output)
 
 
-# TODO: create the bifurcation plot
 def plot_bifurcation(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
 ) -> None:
+    # NOTE: assumes that initial states result in the same period
     initial_state = data["x_0"][0]
+
     bifurcation_data = list()
     for point in data["period"]:
         period = point.item()
         parameter = point["r"].item()
-        # NOTE: assumes that initial states result in the same period
         series = data["value"].sel({"r": parameter, "x_0": initial_state}).to_pandas()
         vector = series[series.first_valid_index():series.last_valid_index()]
         if period is not None:
