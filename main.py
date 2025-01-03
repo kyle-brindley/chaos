@@ -15,17 +15,54 @@ DEFAULT_RELATIVE_TOLERANCE = 1e-4
 DEFAULT_MAX_PERIOD = 12
 
 
-def logistic(x: float, r: float) -> float:
-    r"""Return the next value in the logistic function give the current value
-
-    .. math
-
-       x_{next} = r x_{current} \left ( 1 - x_{current} \right )
-
-    :param x: The current :math:`x_{current}` value of the logistic function
-    :param r: The parameter :math:`r` value of the logistic function
-    """
-    return r * x * (1 - x)
+def get_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=DESCRIPTION,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        "--initial",
+        nargs="+",
+        type=float,
+        required=True,
+        help="The initial state: `x_{0}`",
+    )
+    parser.add_argument(
+        "--parameter",
+        nargs="+",
+        type=float,
+        required=True,
+        help="The logistic function parameter: `r`)",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=pathlib.Path,
+        default=None,
+        help="The output plot absolute or relative path",
+    )
+    parser.add_argument(
+        "-n",
+        "--max-period",
+        type=int,
+        default=DEFAULT_MAX_PERIOD,
+        help="The maximum number of periods to search for",
+    )
+    parser.add_argument(
+        "-m",
+        "--max-iteration",
+        type=int,
+        default=DEFAULT_MAX_ITERATION,
+        help="The maximum number of iterations to calculate",
+    )
+    parser.add_argument(
+        "-t",
+        "--relative-tolerance",
+        type=float,
+        default=DEFAULT_RELATIVE_TOLERANCE,
+        help="The relative tolerance on float equality comparisons",
+    )
+    return parser
 
 
 def return_periods(
@@ -105,6 +142,19 @@ def stable_period(
         return None
 
 
+def logistic(x: float, r: float) -> float:
+    r"""Return the next value in the logistic function give the current value
+
+    .. math
+
+       x_{next} = r x_{current} \left ( 1 - x_{current} \right )
+
+    :param x: The current :math:`x_{current}` value of the logistic function
+    :param r: The parameter :math:`r` value of the logistic function
+    """
+    return r * x * (1 - x)
+
+
 def calculate_states(
     initial_states: list[float],
     parameters: list[float],
@@ -137,6 +187,7 @@ def calculate_states(
         numpy.nan,
     )
     states[:, :, 0] = initial_states
+    parameter_periods = [None] * len(parameters)
 
     for depth, parameter in enumerate(parameters):
         for iteration in range(1, max_iteration):
@@ -151,9 +202,10 @@ def calculate_states(
             ) for row in range(len(initial_states))]
             period = periods[0] if numpy.all(periods) else None
             if numpy.any(states[depth, :, iteration] < 0.0) or period is not None:
+                parameter_periods[depth] = period
                 break
 
-    return states
+    return states, parameter_periods
 
 
 def plot_states(
@@ -183,56 +235,6 @@ def plot_states(
         matplotlib.pyplot.show()
 
 
-def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description=DESCRIPTION,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument(
-        "--initial",
-        nargs="+",
-        type=float,
-        required=True,
-        help="The initial state: `x_{0}`",
-    )
-    parser.add_argument(
-        "--parameter",
-        nargs="+",
-        type=float,
-        required=True,
-        help="The logistic function parameter: `r`)",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=pathlib.Path,
-        default=None,
-        help="The output plot absolute or relative path",
-    )
-    parser.add_argument(
-        "-n",
-        "--max-period",
-        type=int,
-        default=DEFAULT_MAX_PERIOD,
-        help="The maximum number of periods to search for",
-    )
-    parser.add_argument(
-        "-m",
-        "--max-iteration",
-        type=int,
-        default=DEFAULT_MAX_ITERATION,
-        help="The maximum number of iterations to calculate",
-    )
-    parser.add_argument(
-        "-t",
-        "--relative-tolerance",
-        type=float,
-        default=DEFAULT_RELATIVE_TOLERANCE,
-        help="The relative tolerance on float equality comparisons",
-    )
-    return parser
-
-
 def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
@@ -244,7 +246,7 @@ def main() -> None:
     max_iteration = args.max_iteration
     relative_tolerance = args.relative_tolerance
 
-    states = calculate_states(
+    states, periods = calculate_states(
         initial_states,
         parameters,
         max_period=max_period,
