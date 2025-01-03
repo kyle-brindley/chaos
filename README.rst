@@ -21,6 +21,24 @@ Environment
    $ conda env create --name chaos-env --file environment.yml
    $ conda activate chaos-env
 
+==========
+Quickstart
+==========
+
+If you have 5 minutes of patience and a relatively modern laptop, you can
+explore a reasonably refined bifurcation plot with the following options. The
+``--output`` option will save the calculations to an H5 file so you can load
+them again with the ``--input`` option. The ``--plot-bifurcation`` option will
+open a matplotlib window, but can also accept a file to write instead.
+
+.. code-block::
+
+   $ time python -m chaos.main --parameter 0.99 1.01 2.99 3.01 --parameter-arange 0.0 0.99 0.05 --parameter-arange 1.05 2.99 0.05 --parameter-arange 3.01 3.5 0.005 --parameter-arange 3.5 4. 0.001 --max-iteration 2000 --output bifurcation.h5 --plot-bifurcation
+
+   real	4m12.177s
+   user	4m12.922s
+   sys	0m0.145s
+
 ===
 Run
 ===
