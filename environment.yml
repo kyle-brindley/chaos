@@ -5,9 +5,12 @@ dependencies:
   - black
   - h5netcdf
   - matplotlib-base
+  - pip
   - pytest
   - pytest-cov
   - pytest-xdist
   - python
   - python-build
+  - setuptools >=64
+  - setuptools_scm >=8
   - xarray
