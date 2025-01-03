@@ -191,8 +191,8 @@ def calculate_states(
     parameter_periods = [None] * len(parameters)
 
     # TODO: Build the xarray dataset first, then operate on its contents
-    # Counter option: Cython-ize the function calculations. I think this is possible as a numpy array, but maybe not as
-    # an xarray dataset.
+    # Counter option: Cython-ize the function calculations. I think this is
+    # possible as a numpy array, but maybe not as an xarray dataset.
     for depth, parameter in enumerate(parameters):
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
@@ -221,7 +221,7 @@ def calculate_states(
             "r": parameters,
             "x_0": initial_states,
             "iteration": range(max_iteration),
-        }
+        },
     )
 
     return data
