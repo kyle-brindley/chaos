@@ -16,6 +16,7 @@ DESCRIPTION = """Calculate and plot the logistic function:
 DEFAULT_MAX_ITERATION = 1000
 DEFAULT_RELATIVE_TOLERANCE = 1e-6
 DEFAULT_MAX_PERIOD = 12
+DEFAULT_MARKER_SIZE = 3
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -89,6 +90,12 @@ def get_parser() -> argparse.ArgumentParser:
         type=float,
         default=DEFAULT_RELATIVE_TOLERANCE,
         help="The relative tolerance on float equality comparisons",
+    )
+    parser.add_argument(
+        "--marker-size",
+        type=float,
+        default=DEFAULT_MARKER_SIZE,
+        help="The marker size in bifurcation plot",
     )
     parser.add_argument(
         "-V",
@@ -314,11 +321,13 @@ def plot_curves(
 def plot_bifurcation(
     data: xarray.Dataset,
     output: typing.Optional[pathlib.Path] = None,
+    marker_size: float = DEFAULT_MARKER_SIZE,
 ) -> None:
     """Plot the bifurcation periods of function calculations
 
     :param data: XArray Dataset of logistic function calculations
-    :param output: save to file instead of raising a plot window
+    :param output: Save to file instead of raising a plot window
+    :param marker_size: Size of point markers in plot
     """
     # NOTE: assumes that initial states result in the same period
     initial_state = data["x_0"][0]
@@ -337,7 +346,11 @@ def plot_bifurcation(
 
     for period, bifurcation in zip(data["r"].values, bifurcation_data):
         matplotlib.pyplot.scatter(
-            x=[period] * len(bifurcation), y=bifurcation, marker=".", color="b"
+            x=[period] * len(bifurcation),
+            y=bifurcation,
+            marker=".",
+            color="b",
+            s=marker_size,
         )
 
     title = r"$x_{next} = r x_{current} \left ( 1 - x_{current} \right )$"
@@ -356,7 +369,9 @@ def main() -> None:
     parameters = numpy.array(args.parameter)
     if args.parameter_arange is not None:
         for arange_args in args.parameter_arange:
-            parameters = numpy.concatenate((parameters, numpy.arange(*arange_args)))
+            parameters = numpy.concatenate(
+                (parameters, numpy.arange(*arange_args))
+            )
     parameters = numpy.unique(parameters)
 
     data = calculate_curves(
@@ -370,7 +385,11 @@ def main() -> None:
     if args.plot_curves is not False:
         plot_curves(data, output=args.plot_curves)
     if args.plot_bifurcation is not False:
-        plot_bifurcation(data, output=args.plot_bifurcation)
+        plot_bifurcation(
+            data,
+            output=args.plot_bifurcation,
+            marker_size=args.marker_size
+        )
 
     if args.output:
         data.to_netcdf(args.output, engine="h5netcdf")
