@@ -190,6 +190,7 @@ def calculate_states(
     states[:, :, 0] = initial_states
     parameter_periods = [None] * len(parameters)
 
+    # TODO: Build the xarray dataset first, then operate on its contents
     for depth, parameter in enumerate(parameters):
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
@@ -235,6 +236,7 @@ def plot_states(
     :param parameters: vector of logistic function parameters :math:`r`
     :param filepath: save to file instead of raising a plot window
     """
+    # TODO: Put the period solution back into the legend
     line_styles = itertools.cycle(["-", "--", "-.", ":"])
     for initial_state in data["x_0"]:
         matplotlib.pyplot.gca().set_prop_cycle(None)
