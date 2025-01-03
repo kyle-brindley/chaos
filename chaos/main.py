@@ -26,36 +26,60 @@ def get_parser() -> argparse.ArgumentParser:
         description=DESCRIPTION,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    # TODO: Add a CLI option to specify a continuous range of parameters
     parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=__version__,
+    )
+
+    required_group = parser.add_argument_group(title="Required options")
+    required_options = required_group.add_mutually_exclusive_group(
+        required=True,
+    )
+    required_options.add_argument(
         "--parameter",
         nargs="+",
         type=float,
-        required=True,
         help="The logistic function parameter: `r`)",
     )
-    parser.add_argument(
+    required_options.add_argument(
+        "-i",
+        "--input",
+        type=pathlib.Path,
+        help="Read calculations from a file and skip computing",
+    )
+
+    optional_group = parser.add_argument_group(title="Options")
+    optional_group.add_argument(
+        "-o",
+        "--output",
+        type=pathlib.Path,
+        default=None,
+        help="Save the calculations to a HDF5 file",
+    )
+    optional_group.add_argument(
         "--parameter-arange",
         nargs=3,
         type=float,
         action="append",
         help="Specify range of parameters [start, stop, step]",
     )
-    parser.add_argument(
+    optional_group.add_argument(
         "--initial",
         nargs="+",
         type=float,
         default=DEFAULT_INITIAL_STATE,
         help="The initial state: `x_{0}`",
     )
-    parser.add_argument(
+    optional_group.add_argument(
         "-n",
         "--max-period",
         type=int,
         default=DEFAULT_MAX_PERIOD,
         help="The maximum number of periods to search for",
     )
-    parser.add_argument(
+    optional_group.add_argument(
         "-m",
         "--max-iteration",
         type=int,
@@ -63,20 +87,12 @@ def get_parser() -> argparse.ArgumentParser:
         help="The maximum number of iterations to calculate",
     )
     # TODO: add an option to force computation to the full max iterations
-    parser.add_argument(
+    optional_group.add_argument(
         "-t",
         "--relative-tolerance",
         type=float,
         default=DEFAULT_RELATIVE_TOLERANCE,
         help="The relative tolerance on float equality comparisons",
-    )
-
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=pathlib.Path,
-        default=None,
-        help="Save the calculations to a HDF5 file",
     )
 
     plot_curves_group = parser.add_argument_group(title="Curves plot")
@@ -109,13 +125,6 @@ def get_parser() -> argparse.ArgumentParser:
         type=int,
         default=DEFAULT_MARKER_SIZE,
         help="Subsample of iterations to plot when no period is found",
-    )
-
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version=__version__,
     )
 
     return parser
@@ -379,26 +388,29 @@ def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 
-    initial_states = args.initial
-    max_period = args.max_period
-    max_iteration = args.max_iteration
-    relative_tolerance = args.relative_tolerance
+    # Read previous calculations from file if provided
+    if args.input is not None:
+        data = xarray.open_dataset(args.input)
+    # Perform calculations
+    else:
+        parameters = numpy.array(args.parameter)
+        if args.parameter_arange is not None:
+            for arange_args in args.parameter_arange:
+                parameters = numpy.concatenate(
+                    (parameters, numpy.arange(*arange_args))
+                )
+        parameters = numpy.unique(parameters)
 
-    parameters = numpy.array(args.parameter)
-    if args.parameter_arange is not None:
-        for arange_args in args.parameter_arange:
-            parameters = numpy.concatenate(
-                (parameters, numpy.arange(*arange_args))
-            )
-    parameters = numpy.unique(parameters)
+        data = calculate_curves(
+            args.initial_states,
+            parameters,
+            max_period=args.max_period,
+            max_iteration=args.max_iteration,
+            relative_tolerance=args.relative_tolerance,
+        )
 
-    data = calculate_curves(
-        initial_states,
-        parameters,
-        max_period=max_period,
-        max_iteration=max_iteration,
-        relative_tolerance=relative_tolerance,
-    )
+    if args.output:
+        data.to_netcdf(args.output, engine="h5netcdf")
 
     if args.plot_curves is not False:
         plot_curves(data, output=args.plot_curves)
@@ -409,9 +421,6 @@ def main() -> None:
             marker_size=args.marker_size,
             iteration_samples=args.iteration_samples,
         )
-
-    if args.output:
-        data.to_netcdf(args.output, engine="h5netcdf")
 
 
 if __name__ == "__main__":
