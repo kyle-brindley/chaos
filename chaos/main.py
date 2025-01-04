@@ -397,6 +397,11 @@ def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 
+    # TODO: Separate the calculation and the post-processing into separate
+    # subcommands. Imagining a two-step workflow that doesn't hide the raw data
+    # (the calculated curves). Calculate study space and save to disk.
+    # Post-process (and plot) bifurcation data.
+
     # Read previous calculations from file if provided
     if args.input is not None:
         data = xarray.open_dataset(args.input)
