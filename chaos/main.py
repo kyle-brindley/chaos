@@ -435,6 +435,7 @@ def main() -> None:
             marker_size=args.marker_size,
             iteration_samples=args.iteration_samples,
         )
+    # TODO: Add a function to plot the period as a function of parameter.
 
 
 if __name__ == "__main__":
