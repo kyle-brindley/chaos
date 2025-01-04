@@ -14,6 +14,8 @@ DESCRIPTION = """Calculate and plot the logistic function:
 `x_{next} = r * x_{current} * (1 - x_{current})`"
 """
 DEFAULT_INITIAL_STATE = [0.25]
+# TODO: Expand the max period to at least 16. I think some of my "unconverged"
+# points might be periods larger than 12.
 DEFAULT_MAX_PERIOD = 12
 DEFAULT_MAX_ITERATION = 1000
 DEFAULT_RELATIVE_TOLERANCE = 1e-6
@@ -260,6 +262,10 @@ def calculate_curves(
     # Counter option: Cython-ize the function calculations. I think this is
     # possible as a numpy array, but maybe not as an xarray dataset.
     # Third option: explore multithreading/pool/dask for Python parallel solve
+    # TODO: Is it possible to pass the entire depth dimension and a paramter
+    # vector into the logistic function (as currently written) to eliminate
+    # this outer loop? I don't want to bake the dimensionality of the study
+    # into the function of interest.
     for depth, parameter in enumerate(parameters):
         for iteration in range(1, max_iteration):
             previous_iteration = iteration - 1
