@@ -222,6 +222,19 @@ def logistic(x: float, r: float) -> float:
     return r * x * (1 - x)
 
 
+def sine(x: float, r: float) -> float:
+    r"""Return the next value in the sine function give the current value
+
+    .. math
+
+       x_{next} = r sin \left ( \pi x_{current} \right )
+
+    :param x: The current :math:`x_{current}` value of the logistic function
+    :param r: The parameter :math:`r` value of the sine function
+    """
+    return r * numpy.sin(numpy.pi * x)
+
+
 def calculate_curves(
     initial_states: list[float],
     parameters: typing.Iterable[float],
